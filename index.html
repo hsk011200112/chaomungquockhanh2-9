@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Video Player Mobile</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      background: #111;
+      color: #fff;
+      font-family: sans-serif;
+    }
+    .video-container {
+      width: 100%;
+      max-width: 480px; /* Giới hạn vừa cho màn hình điện thoại */
+    }
+    video {
+      width: 100%;
+      border-radius: 12px;
+      background: #000;
+    }
+    .controls {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      background: rgba(0,0,0,0.6);
+      padding: 8px 12px;
+      border-radius: 10px;
+    }
+    button {
+      background:none; border:0; color:#fff;
+      font-size:14px; cursor:pointer;
+    }
+    input[type=range] {
+      flex:1;
+      -webkit-appearance:none;
+      height:6px;
+      background:#555;
+      border-radius:3px;
+      outline:none;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance:none;
+      width:12px; height:12px;
+      border-radius:50%;
+      background:#fff;
+      cursor:pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="video-container">
+    <video id="v" autoplay muted loop playsinline>
+      <source src="output_web.mp4" type="video/mp4">
+    </video>
+
+    <div class="controls">
+      <button id="playPause">⏸ Pause</button>
+      <button id="toggleSound">🔇 Bật tiếng</button>
+      <button id="rewind">⏪ -10s</button>
+      <button id="forward">⏩ +10s</button>
+      <input type="range" id="progress" value="0" min="0" step="0.1">
+    </div>
+  </div>
+
+  <script>
+    const v = document.getElementById('v');
+    const btnPlayPause = document.getElementById('playPause');
+    const btnSound = document.getElementById('toggleSound');
+    const btnRewind = document.getElementById('rewind');
+    const btnForward = document.getElementById('forward');
+    const progress = document.getElementById('progress');
+
+    v.addEventListener('loadedmetadata', () => {
+      progress.max = v.duration;
+    });
+
+    btnPlayPause.addEventListener('click', () => {
+      if (v.paused) {
+        v.play();
+        btnPlayPause.textContent = "⏸ Pause";
+      } else {
+        v.pause();
+        btnPlayPause.textContent = "▶️ Play";
+      }
+    });
+
+    btnSound.addEventListener('click', () => {
+      if (v.muted || v.volume === 0) {
+        v.muted = false;
+        v.volume = 1.0;
+        v.play();
+        btnSound.textContent = "🔊 Tắt tiếng";
+      } else {
+        v.muted = true;
+        btnSound.textContent = "🔇 Bật tiếng";
+      }
+    });
+
+    btnRewind.addEventListener('click', () => {
+      v.currentTime = Math.max(0, v.currentTime - 10);
+    });
+
+    btnForward.addEventListener('click', () => {
+      v.currentTime = Math.min(v.duration, v.currentTime + 10);
+    });
+
+    v.addEventListener('timeupdate', () => {
+      progress.value = v.currentTime;
+    });
+
+    progress.addEventListener('input', () => {
+      v.currentTime = progress.value;
+    });
+  </script>
+</body>
+</html>
